@@ -12,11 +12,9 @@ struct SignUpView: View {
     
     func signUp() {
         signupViewModel.signUp(username: signupViewModel.username, email: signupViewModel.email, password: signupViewModel.password, imageData: signupViewModel.imageData, completed: { (user) in
-            print(user.email)
             self.clean()
             // Switch to the Main App
         }) { (errorMessage) in
-            print("Error: \(errorMessage)")
             self.signupViewModel.showAlert = true
             self.signupViewModel.errorString = errorMessage
             self.clean()
@@ -54,6 +52,12 @@ struct SignUpView: View {
             
             VStack(alignment: .leading) {
                 SignUpButton(action: signUp)
+                    .alert(isPresented: $signupViewModel.showAlert) {
+                        Alert(
+                            title: Text("Authentication error!"),
+                            message: Text(self.signupViewModel.errorString),
+                            dismissButton: .default(Text("OK")))
+                    }
                 Text("*An account will allow you to save and access photo information across devices. You can  delete your account at any time and your information will not be shared.")
                     .font(.footnote)
                     .foregroundStyle(Color(.secondaryLabel))
