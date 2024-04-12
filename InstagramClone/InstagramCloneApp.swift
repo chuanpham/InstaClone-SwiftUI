@@ -16,10 +16,10 @@ struct InstagramCloneApp: App {
      }
 
     var body: some Scene {
-        
         WindowGroup {
             NavigationView {
-                SignInView()
+                InitialView()
+                    .environmentObject(SessionStore())
             }
             .accentColor(.black)
         }

@@ -8,8 +8,26 @@
 import SwiftUI
 
 struct SignInView: View {
-    @State var email: String = ""
-    @State var password: String = ""
+    @ObservedObject var signInViewModel = SignInViewModel()
+    
+    func signIn() {
+        signInViewModel.signIn(email: signInViewModel.email, password: signInViewModel.password, completed: { user in
+            self.clean()
+            // Switch to the Main App
+            print(user.email)
+            
+        }) { errorMessage in
+            self.signInViewModel.showAlert = true
+            self.signInViewModel.errorString = errorMessage
+            self.clean()
+        }
+    }
+    
+    func clean() {
+        self.signInViewModel.email = ""
+        self.signInViewModel.password = ""
+    }
+    
     var body: some View {
         VStack {
             Image("logo")
@@ -17,11 +35,17 @@ struct SignInView: View {
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 150, height: 150)
             
-            EmailTextField(email: $email)
+            EmailTextField(email: $signInViewModel.email)
             
-            PasswordTextField(password: $password)
+            PasswordTextField(password: $signInViewModel.password)
             
-            SignInButton(action: {})
+            SignInButton(action: signIn)
+                .alert(isPresented: $signInViewModel.showAlert) {
+                    Alert(
+                        title: Text("Authentication error!"),
+                        message: Text(self.signInViewModel.errorString),
+                        dismissButton: .default(Text("OK")))
+                }
             
             NavigationLink(destination: SignUpView()) {
                 SignUpSection()
@@ -46,7 +70,7 @@ struct EmailTextField: View {
 struct PasswordTextField: View {
     @Binding var password: String
     var body: some View {
-        TextField("Password", text: $password)
+        SecureField("Password", text: $password)
             .padding()
             .overlay(
                 RoundedRectangle(cornerRadius: 8)

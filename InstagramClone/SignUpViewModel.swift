@@ -12,7 +12,6 @@ import FirebaseStorage
 import SwiftUI
 
 class SignupViewModel: ObservableObject {
-    
      var username: String = ""
      var email: String = ""
      var password: String = ""
@@ -27,7 +26,11 @@ class SignupViewModel: ObservableObject {
            AuthService.signupUser(username: username, email: email, password: password, imageData: imageData, onSuccess: completed, onError: onError)
         } else {
             showAlert = true
-            errorString = "Please fill in all fields"
+            if imageData.isEmpty {
+                errorString = "Please choose an avatar!"
+            } else {
+                errorString = "Please fill in all fields"
+            }
         }
     }
 }
